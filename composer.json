@@ -1,0 +1,46 @@
+{
+    "type": "symfony-bundle",
+    "name": "sacrpkg/parser-bundle",
+    "description": "Parser bundle",    
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oleg Bruyako",
+            "email": "jonsm2184@gmail.com",
+            "role": "Developer"        
+        }
+    ],
+    "require": {
+        "php": ">=8.0.1",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        
+        "doctrine/doctrine-bundle": "^2.5",
+        "doctrine/orm": "^2.11",
+        "symfony/console": "6.0.*",
+        "symfony/dotenv": "6.0.*",
+        "symfony/flex": "^2",
+        "symfony/framework-bundle": "6.0.*",
+        "symfony/process": "6.0.*",      
+        "symfony/yaml": "^6.0"
+    },
+    "require-dev": {
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "sacrpkg\\ParserBundle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "sacrpkg\\ParserBundle\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "6.0.*"
+        }
+    }
+}
