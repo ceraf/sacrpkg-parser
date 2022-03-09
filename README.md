@@ -1,5 +1,12 @@
-# Hello World
+SacrpkgParserBundle
+====================
 
-Проект создан в рамках статьи о [создании composer пакетов](https://ctrlv.me/you-first-composer-package/)
+A package for quickly creating parser.
 
-Примеры кода в файле examples/example.php
+[![Total Downloads](https://poser.pugx.org/sacrpkg/crud-bundle/downloads)](//packagist.org/packages/sacrpkg/parser-bundle)
+[![Latest Stable Version](https://poser.pugx.org/sacrpkg/crud-bundle/v)](//packagist.org/packages/sacrpkg/parser-bundle)
+
+License
+-------
+
+This bundle is under the MIT license. See the complete license [in the bundle](LICENSE).
