@@ -1,0 +1,15 @@
+services:
+    sacrpkg_parser.dictionary.english:
+        class: sacrpkg\ParserBundle\Dictionary\EnglishDictionary
+        public: true
+
+    sacrpkg\ParserBundle\Dictionary\DictionaryInterface: '@sacrpkg_parser.dictionary.english'
+    
+    sacrpkg_parser.report:
+        class: sacrpkg\ParserBundle\Report\ParserReport
+        public: true
+        arguments:
+            - '@kernel'
+
+    sacrpkg\ParserBundle\Report\ReportInterface: '@sacrpkg_parser.report'
+    
