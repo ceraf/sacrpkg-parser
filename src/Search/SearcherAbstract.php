@@ -32,7 +32,7 @@ abstract class SearcherAbstract implements SearcherInterface
     {
         $this->initBrowsers($proxy_list);
 		
-		if (!$this->brousers) {
+		if (!$this->browsers) {
 			$this->log(Logger::PRIORITY_ERROR, 'Not found browsers');
 			exit;
 		}
@@ -44,7 +44,11 @@ abstract class SearcherAbstract implements SearcherInterface
     abstract public function search(string $str, callable $item_process,
         callable $error_item = null, array $params = []): self;
 
-
+    /**
+     * {@inheritdoc}
+     */
+    abstract public function getTestUrl(): string;
+    
     /**
      * Execute function with try catch block.
      *
@@ -81,7 +85,7 @@ abstract class SearcherAbstract implements SearcherInterface
     }
     
     /**
-     * Init brousers.
+     * Init browsers.
      *
      * @param string $proxy_list List proxies     
      *
@@ -103,7 +107,7 @@ abstract class SearcherAbstract implements SearcherInterface
             $user_agent = 'Mozilla/6.0 (Windows NT 6.3; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0';
             $browser = new Browser($proxy, $user_agent);
 			if ($this->isValidBrowser($browser)) {
-				$this->brousers[] = $browser;
+				$this->browsers[] = $browser;
 			}
         }
     }
@@ -116,12 +120,16 @@ abstract class SearcherAbstract implements SearcherInterface
      * @return void
      */
 	protected function isValidBrowser(HttpBrowser $browser): bool
-	{ return true;
+	{
 		try {
-			$crawler = $browser->request('GET', 'https://ya.ru');
-			if ($crawler->html()) {
+			$crawler = $browser->request('GET', $this->getTestUrl());
+            $code = $browser->getResponse()->getStatusCode();
+            
+			if ($crawler->html() && ($code == 200)) {
 				return true;
-			}
+			} else {
+                $this->log(Logger::PRIORITY_ERROR, 'Invalid browser: '.$code.': '.$crawler->html());
+            }
 		} catch (\Exception $e) {
             $this->log(Logger::PRIORITY_ERROR, 'Invalid browser: '.$e->getMessage());
 		}
@@ -136,7 +144,7 @@ abstract class SearcherAbstract implements SearcherInterface
      */
     protected function getRandomBrowser(): HttpBrowser
     {
-        $brouser = $this->brousers[array_rand($this->brousers)];
+        $brouser = $this->browsers[array_rand($this->browsers)];
         $brouser->restart();
         
         return $brouser;

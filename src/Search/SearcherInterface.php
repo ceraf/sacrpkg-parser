@@ -28,4 +28,11 @@ interface SearcherInterface
      */
     public function search(string $str, callable $item_process,
         callable $item_error = null, array $params = []): self;
+        
+    /**
+     * Get url for test browser.
+     *
+     * @return string
+     */        
+    public function getTestUrl(): string;
 }

@@ -17,6 +17,8 @@ use sacrpkg\ParserBundle\Logger;
 
 abstract class MapperAbstract implements MapperInterface
 {
+    use LoggerTrait;
+    
     /**
      * @var ManagerRegistry
      */

@@ -99,28 +99,9 @@ abstract class ParserAbstract implements ParserInterface
         $this->mapper->save($item);
         $this->count_search_items++;
       
-        $signal = $this->doctrine->getManager()
-            ->getRepository('App:'.$this->getTaskClassName())
-            ->getSignalTask($params['task_id']);
-
-        if ($signal == 'pause') {
-            while($signal == 'pause') {
-                sleep(self::PAUSE_VALUE);
-                $signal = $this->doctrine->getManager()
-                    ->getRepository('App:'.$this->getTaskClassName())
-                    ->getSignalTask($params['task_id']);
-            }
-            
-        }
-        
-        if ($signal == 'kill') {
-            throw new TaskException('Kill process');
-            //return SearcherAbstract::CODE_KILL;
-        }
+        $this->checkTaskSignal();
         
         $this->doctrine->getManager()->getUnitOfWork()->clear();
-        
-        //return SearcherAbstract::CODE_OK;
     }
     
     /**
@@ -202,6 +183,27 @@ abstract class ParserAbstract implements ParserInterface
         }
         
         return $num;
+    }
+    
+    protected function checkTaskSignal(array $params): void
+    {
+        $signal = $this->doctrine->getManager()
+            ->getRepository('App:'.$this->getTaskClassName())
+            ->getSignalTask($params['task_id']);
+
+        if ($signal == 'pause') {
+            while($signal == 'pause') {
+                sleep(self::PAUSE_VALUE);
+                $signal = $this->doctrine->getManager()
+                    ->getRepository('App:'.$this->getTaskClassName())
+                    ->getSignalTask($params['task_id']);
+            }
+            
+        }
+
+        if ($signal == 'kill') { exit;
+            throw new TaskException('Kill process');
+        }
     }
     
     protected function executeByStr(string $str, array $params = []): int
