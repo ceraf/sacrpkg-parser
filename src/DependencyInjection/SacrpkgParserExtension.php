@@ -3,12 +3,14 @@
 namespace sacrpkg\ParserBundle\DependencyInjection;
 
 use sacrpkg\ParserBundle\Command\TestCommand;
+use sacrpkg\ParserBundle\Command\BackupCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class SacrpkgParserExtension extends Extension
 {
@@ -25,6 +27,7 @@ class SacrpkgParserExtension extends Extension
         
         // создание определения команды
         $commandDefinition = new Definition(TestCommand::class);
+        $commandDefinitionBackup = new Definition(BackupCommand::class);
         // добавление ссылок на отправителей в конструктор комманды
         
       //  foreach ($config['senders'] as $serviceId) {
@@ -34,5 +37,10 @@ class SacrpkgParserExtension extends Extension
         $commandDefinition->addTag('console.command', ['command' => TestCommand::getCommanName()]);
         // установка определения в контейнер
         $container->setDefinition(TestCommand::class, $commandDefinition);
+    
+        $commandDefinitionBackup->addTag('console.command', ['command' => BackupCommand::getCommanName()])
+            ->addArgument(new Reference('kernel'));
+        // установка определения в контейнер
+        $container->setDefinition(BackupCommand::class, $commandDefinitionBackup);
     }
 }
