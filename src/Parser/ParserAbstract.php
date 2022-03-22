@@ -99,7 +99,7 @@ abstract class ParserAbstract implements ParserInterface
         $this->mapper->save($item);
         $this->count_search_items++;
       
-        $this->checkTaskSignal();
+        $this->checkTaskSignal($params);
         
         $this->doctrine->getManager()->getUnitOfWork()->clear();
     }
@@ -171,11 +171,11 @@ abstract class ParserAbstract implements ParserInterface
         foreach ($ranges as $letter) {
             $new_str = $str.$letter;
             if ($num_pos > $curr_pos) {
-                //$add_num = $this->$func($new_str, $params);
-                //$num += $add_num;
-                //if ($add_num) {
+                $add_num = $this->$func($new_str, $params);
+                $num += $add_num;
+                if ($add_num) {
                     $this->executeRecursive($new_str, $num_pos, $curr_pos + 1, $func, $params);
-                //}
+                }
             } else {
                 $add_num = $this->$func($new_str, $params);
                 $num += $add_num;

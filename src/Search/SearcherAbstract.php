@@ -23,8 +23,8 @@ abstract class SearcherAbstract implements SearcherInterface
     const CODE_OK = 0;
     const CODE_KILL = 10;
     
-    private $proxies;
-    private $browsers;
+    protected $proxies;
+    protected $browsers;
     
     use LoggerTrait; 
     
@@ -162,5 +162,42 @@ abstract class SearcherAbstract implements SearcherInterface
 	{
 		$log_name = 'Parser.log';
         $this->toLog($priority, $mes, $log_name);
+	}
+    
+	public function sendPostRequest($url, $data, ?array $cookies, array $proxy, string $user_agent)
+	{
+		$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_COOKIESESSION, true);
+		curl_setopt($ch,CURLOPT_POST, 1);                //0 for a get request
+		curl_setopt($ch,CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch,CURLOPT_CONNECTTIMEOUT, 180);
+		curl_setopt($ch,CURLOPT_TIMEOUT, 180);
+
+$headers = <<<END
+User-Agent: {USER_AGENT}
+Cookie: {COOKIES}
+END;
+        $headers = str_replace(['{COOKIES}', '{USER_AGENT}'], [implode(';', $cookies),$user_agent], $headers);
+
+		curl_setopt($ch, CURLOPT_PROXY, $proxy['ip'].':'.$proxy['port']);
+		curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['login'].':'.$proxy['pass']);
+		curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+        
+        curl_setopt($ch, CURLOPT_HTTPHEADER, explode("\n", $headers));
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_NOBODY, false);
+
+        
+		$response = curl_exec($ch);
+		$info = curl_getinfo($ch);
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close ($ch);
+		return ['code' => $httpCode, 'response' => $response, 'info' => $info, 
+		    'type' => 'POST', 'url' => $url];
 	}
 }
