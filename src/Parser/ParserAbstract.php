@@ -98,9 +98,9 @@ abstract class ParserAbstract implements ParserInterface
     {
         $this->mapper->save($item);
         $this->count_search_items++;
-      
+
         $this->checkTaskSignal($params);
-        
+
         $this->doctrine->getManager()->getUnitOfWork()->clear();
     }
     
@@ -201,7 +201,7 @@ abstract class ParserAbstract implements ParserInterface
             
         }
 
-        if ($signal == 'kill') { exit;
+        if ($signal == 'kill') {
             throw new TaskException('Kill process');
         }
     }
