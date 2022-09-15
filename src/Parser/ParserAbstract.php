@@ -98,9 +98,9 @@ abstract class ParserAbstract implements ParserInterface
     {
         $this->mapper->save($item);
         $this->count_search_items++;
-
+      
         $this->checkTaskSignal($params);
-
+        
         $this->doctrine->getManager()->getUnitOfWork()->clear();
     }
     
@@ -120,7 +120,7 @@ abstract class ParserAbstract implements ParserInterface
 		if (!file_exists($this->kernel->getProjectdir().'/public/files'))
 			mkdir($this->kernel->getProjectdir().'/public/files');
         
-        $dst_path = $this->kernel->getProjectDir().'/public/files/'.strtolower($_ENV['PARSER_NAME'] ?? 'parcer').'.json';
+        $dst_path = $this->kernel->getProjectDir().'/public/files/'.strtolower($_ENV['FILE_NAME'] ?? $_ENV['PARSER_NAME'] ?? 'parcer').'.json';
         $f = fopen ($dst_path, 'w');
         if ($f) {
             $count = 0;
@@ -151,11 +151,28 @@ abstract class ParserAbstract implements ParserInterface
 		
 		$this->log(Logger::PRIORITY_INFO, 'Start with string \''.$str.'\' and params '.serialize($params));
 
-        if ($num_pos) {
-           // $this->executeByStr($str, $params);
-            $this->executeRecursive($str, $num_pos, 1, 'executeByStr', $params);
+        if ($str == 'ARRAY') {
+            $ranges = $this->dictionary->getAlphabet();
+            $count_num = ceil(count($ranges) / $_ENV['NUM_FLOW']);
+
+            $ranges = array_slice($ranges, $count_num*$params['proc_num'], $count_num);
+            foreach ($ranges as $str_data) {
+                if ($num_pos) {
+                    $this->executeRecursive($str_data, $num_pos, 1, 'executeByStr', $params);
+                } else {
+                    $this->executeByStr($str_data, $params);
+                }
+            }
         } else {
-            $this->executeByStr($str, $params);
+            if ($str == 'NULL') {
+                $str = '';
+            }
+                if ($num_pos) {
+                    $this->executeRecursive($str, $num_pos, 1, 'executeByStr', $params);
+                } else {
+                    $this->executeByStr($str, $params);
+                }
+
         }
         
 		$this->log(Logger::PRIORITY_INFO, 'End');

@@ -25,6 +25,7 @@ abstract class SearcherAbstract implements SearcherInterface
     
     protected $proxies;
     protected $browsers;
+    protected $last_browser;
     
     use LoggerTrait; 
     
@@ -82,6 +83,34 @@ abstract class SearcherAbstract implements SearcherInterface
         }
         
         return $res;
+    }
+    
+    protected function getBrowserForStr(string $str, $proc_num): Browser
+    {
+        $offset_browser = $proc_num*$_ENV['NUM_PROXIES_PROC'];
+        $this->search_browsers = array_slice($this->browsers, $offset_browser, $_ENV['NUM_PROXIES_PROC']);
+        if (!count($this->search_browsers ?? [])) {
+            $this->log(Logger::PRIORITY_ERROR, 'Searcher error: Not find any browsers');
+            throw new \Exception('Not find any browsers');
+        }
+
+        $num_proxies = count($this->search_browsers);
+
+        $this->curr_num_browser = 0;
+        
+        $l = substr($str, strlen($str) - 1);
+        $i = (ord($l) - ord('a')) % $num_proxies;
+        
+        $this->last_browser = $this->search_browsers[$i];
+
+        return $this->getLastBrowser();
+    }
+    
+    protected function getLastBrowser(): Browser
+    {
+        $this->last_browser->restart();
+        
+        return $this->last_browser;
     }
     
     /**
@@ -200,4 +229,6 @@ END;
 		return ['code' => $httpCode, 'response' => $response, 'info' => $info, 
 		    'type' => 'POST', 'url' => $url];
 	}
+    
+
 }
